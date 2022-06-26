@@ -1,0 +1,27 @@
+# Simple test files
+test.py
+ignore.py
+example.py
+ignore*.*
+
+#=====================
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Environments
+
+venv-*/
+
+# mypy
+.mypy_cache/
+# mypy locally saved output
+mypy.out
+
+# PyCharm
+.idea
+.idea/
