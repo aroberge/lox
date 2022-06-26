@@ -1,0 +1,50 @@
+# windows bat file specific to my computer
+friendly_traceback/*.bat
+
+# Simple test files
+test.py
+ignore.py
+example.py
+ignore*.*
+
+#=====================
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+
+# Environments
+
+venv-*/
+
+# mypy
+.mypy_cache/
+# mypy locally saved output
+mypy.out
+
+# PyCharm
+.idea
+.idea/
