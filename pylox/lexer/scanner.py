@@ -55,24 +55,20 @@ class Scanner:
             case "*":
                 add_token(TT.STAR)
             case "!":
-                add_token(TT.BANG_EQUAL) if self.is_next("=") else add_token(TT.BANG)
+                add_token(TT.BANG_EQUAL) if self.match("=") else add_token(TT.BANG)
             case "=":
-                add_token(TT.EQUAL_EQUAL) if self.is_next("=") else add_token(TT.EQUAL)
+                add_token(TT.EQUAL_EQUAL) if self.match("=") else add_token(TT.EQUAL)
             case "<":
-                add_token(TT.LESS_EQUAL) if self.is_next("=") else add_token(TT.LESS)
+                add_token(TT.LESS_EQUAL) if self.match("=") else add_token(TT.LESS)
             case ">":
-                add_token(TT.GREATER_EQUAL) if self.is_next("=") else add_token(
+                add_token(TT.GREATER_EQUAL) if self.match("=") else add_token(
                     TT.GREATER
                 )
             case "/":
-                if self.is_next("/"):
+                if self.match("/"):
                     # This is a comment; ignore until the end of line.
-                    while True:
-                        next_ = self.peek()
-                        if next_ != "\n" and not self.is_at_end():
-                            self.advance()
-                        else:
-                            break
+                    while self.peek() != "\n" and not self.is_at_end():
+                        self.advance()
                 else:
                     add_token(TT.SLASH)
             case " " | "\r" | "\t":
@@ -81,9 +77,14 @@ class Scanner:
                 self.line += 1
                 self.column = -1
             case '"':
-                self.string_()
+                self.string()
             case _:
-                raise LoxSyntaxError(self.line, self.column, f"Unknown token {char}")
+                if char.isdigit():
+                    self.number()
+                else:
+                    raise LoxSyntaxError(
+                        self.line, self.column, f"Unknown token {char}"
+                    )
 
     def advance(self) -> str:
         """Finds the next character and increment the location."""
@@ -93,9 +94,8 @@ class Scanner:
         self.column += 1
         return char
 
-    def is_next(self, expected: str) -> bool:
+    def match(self, expected: str) -> bool:
         """Return True and advance stream if current token equals the expected one."""
-        # This method is called 'match' in the book
         if self.is_at_end():
             return False
         if self.source[self.current] != expected:
@@ -114,7 +114,7 @@ class Scanner:
         text = self.source[self.start : self.current]
         self.tokens.append(Token(type_, text, literal, self.line))
 
-    def string_(self) -> None:
+    def string(self) -> None:
         """Finds the text inside a string. Supports multiline strings."""
         while self.peek() != '"' and not self.is_at_end():
             if self.peek() == "\n":
@@ -130,3 +130,20 @@ class Scanner:
 
         string_content = self.source[self.start + 1 : self.current - 1]
         self.add_token(TT.STRING, string_content)
+
+    def number(self) -> None:
+        """Get a number"""
+        while self.peek().isdigit():
+            self.advance()
+        # Look for the fractional part
+        if self.peek() == "." and self.peek_next().isdigit():
+            self.advance()
+            while self.peek().isdigit():
+                self.advance()
+        self.add_token(TT.NUMBER, self.source[self.start : self.current])
+
+    def peek_next(self) -> str:
+        """Looks at the second next character, without actually advancing the scanner."""
+        if self.current + 1 >= len(self.source):
+            return "\0"
+        return self.source[self.current + 1]
