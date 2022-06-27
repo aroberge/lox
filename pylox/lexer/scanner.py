@@ -14,7 +14,7 @@ class Scanner:
         self.start: int = 0
         self.current: int = 0
         self.line: int = 1
-        self.column: int = 0
+        self.column: int = -1
 
     def is_at_end(self) -> bool:
         """Determine if we have found the last character"""
@@ -79,11 +79,11 @@ class Scanner:
                 pass
             case "\n":
                 self.line += 1
-                self.column = 0
+                self.column = -1
+            case '"':
+                self.string_()
             case _:
-                raise LoxSyntaxError(
-                    self.line, self.column - 1, f"Unknown token {char}"
-                )
+                raise LoxSyntaxError(self.line, self.column, f"Unknown token {char}")
 
     def advance(self) -> str:
         """Finds the next character and increment the location."""
@@ -113,3 +113,20 @@ class Scanner:
         """Appends a single token"""
         text = self.source[self.start : self.current]
         self.tokens.append(Token(type_, text, literal, self.line))
+
+    def string_(self) -> None:
+        """Finds the text inside a string. Supports multiline strings."""
+        while self.peek() != '"' and not self.is_at_end():
+            if self.peek() == "\n":
+                self.line += 1
+                self.column = -1
+            self.advance()
+
+        if self.is_at_end():
+            raise LoxSyntaxError(self.line, self.column, "Unterminated string.")
+
+        # get the closing "
+        self.advance()
+
+        string_content = self.source[self.start + 1 : self.current - 1]
+        self.add_token(TT.STRING, string_content)
