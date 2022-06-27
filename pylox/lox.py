@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import sys
 
+from .errors import LoxSyntaxError
 from .lexer.scanner import Scanner
 
 
@@ -17,15 +18,21 @@ class Lox:
 
     had_error = False
 
-    def __init__(self, args: list) -> None:
+    def __init__(self, args: list[str]) -> None:
         """Entrypoint for the program"""
+        # use >> for prompt to distinguish from my terminal prompt
+        self.prompt = ">> "
         if len(args) > 2:
             print("Usage: py -m lox [script]")
             sys.exit(64)
         elif len(args) == 2:
             self.run_file(args[1])
         else:
-            self.run_prompt()
+            try:
+                self.run_prompt()
+            except KeyboardInterrupt:
+                print("\n   Goodbye!")
+                sys.exit(64)
 
     def run_file(self, filename: str) -> None:
         """Runs code from a file"""
@@ -39,17 +46,22 @@ class Lox:
         """Simple REPL"""
         print("pylox REPL\n")
         while True:
-            # use >> for prompt to distinguish from my terminal prompt
-            line = input(">> ")
+            line = input(self.prompt)
             if not line:
                 break
-            self.run(line)
-            self.had_error = False
+            try:
+                self.run(line)
+            except LoxSyntaxError as exc:
+                print(" " * (exc.column + len(self.prompt)) + "^-- LoxSyntaxError.")
+                print(f"{exc.message}\n")
+                self.had_error = True
+            else:
+                self.had_error = False
 
-    def run(self, source: str):
+    def run(self, source: str) -> None:
         """Runs code from a string"""
         scanner = Scanner(source)
-        tokens = scanner.scan_token()
+        tokens = scanner.scan_tokens()
         for token in tokens:
             print(token)
 
@@ -62,6 +74,8 @@ class Lox:
 
     def report(self, line: int, column: int, where: str, message: str) -> None:
         """Reporting error"""
-        sys.stderr.write(f"[line {line}] Error{where}: {message}\n")
-        sys.stderr.write(" " * column + "^-- Here.\n")
+        if where:
+            where = "in " + where
+        sys.stderr.write(" " * (column + len(self.prompt)) + "^-- Error.\n")
+        sys.stderr.write(f"[line {line}] {where}: {message}\n")
         self.had_error = True

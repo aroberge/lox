@@ -1,12 +1,14 @@
 """Adaptation of Token.java"""
 from __future__ import annotations
 
+from .token_type import TokenType
+
 
 class Token:
     """Simple token object"""
 
     def __init__(
-        self, type_: str, lexeme: str, literal: str, line: int, column: int = -1
+        self, type_: TokenType, lexeme: str, literal: str, line: int, column: int = -1
     ) -> None:
         # Added column information, which is not included in the book.
         self.type_ = type_

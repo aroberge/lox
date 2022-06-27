@@ -1,55 +1,56 @@
-"""Adaptation of TokenType.java
-
-Rather than using enum.Enum to emulate the java class used in the
-book, we use simple module constants. This enables to simplify
-referring to token types in the code, similarly to what is done
-with the *-import on page 46."""
+""" Adaptation of TokenType.java"""
 from __future__ import annotations
 
-# Single character tokens
-LEFT_PAREN: str = "("
-RIGHT_PAREN: str = ")"
-LEFT_BRACE: str = "{"
-RIGHT_BRACE: str = "}"
-COMMA: str = ","
-DOT: str = "."
-MINUS: str = "-"
-PLUS: str = "+"
-SEMICOLON: str = ";"
-SLASH: str = "/"
-STAR: str = "*"
+from enum import Enum, auto
 
-# One or two character tokens
-BANG: str = "!"
-BANG_EQUAL: str = "!="
-EQUAL: str = "="
-EQUAL_EQUAL: str = "=="
-GREATER: str = ">"
-GREATER_EQUAL: str = ">="
-LESS: str = "<"
-LESS_EQUAL: str = "<="
 
-# Identifiers
-IDENTIFIER: str = "IDENTIFIER"
-STRING: str = "STRING"
-NUMBER: str = "NUMBER"
+class TokenType(Enum):
+    """Tokens type in lox."""
 
-# Keywords
-AND: str = "AND"
-CLASS: str = "CLASS"
-ELSE: str = "ELSE"
-FALSE: str = "FALSE"
-FUN: str = "FUN"
-FOR: str = "FOR"
-IF: str = "IF"
-NIL: str = "NIL"
-OR: str = "OR"
-PRINT: str = "PRINT"
-RETURN: str = "RETURN"
-SUPER: str = "SUPER"
-THIS: str = "THIS"
-TRUE: str = "TRUE"
-VAR: str = "VAR"
-WHILE: str = "WHILE"
+    # Single character tokens
+    LEFT_PAREN = auto()
+    RIGHT_PAREN = auto()
+    LEFT_BRACE = auto()
+    RIGHT_BRACE = auto()
+    COMMA = auto()
+    DOT = auto()
+    MINUS = auto()
+    PLUS = auto()
+    SEMICOLON = auto()
+    SLASH = auto()
+    STAR = auto()
 
-EOF: str = "EOF"
+    # One or two character tokens
+    BANG = auto()
+    BANG_EQUAL = auto()
+    EQUAL = auto()
+    EQUAL_EQUAL = auto()
+    GREATER = auto()
+    GREATER_EQUAL = auto()
+    LESS = auto()
+    LESS_EQUAL = auto()
+
+    # Identifiers
+    IDENTIFIER = auto()
+    STRING = auto()
+    NUMBER = auto()
+
+    # Keywords
+    AND = auto()
+    CLASS = auto()
+    ELSE = auto()
+    FALSE = auto()
+    FUN = auto()
+    FOR = auto()
+    IF = auto()
+    NIL = auto()
+    OR = auto()
+    PRINT = auto()
+    RETURN = auto()
+    SUPER = auto()
+    THIS = auto()
+    TRUE = auto()
+    VAR = auto()
+    WHILE = auto()
+
+    EOF = auto()
