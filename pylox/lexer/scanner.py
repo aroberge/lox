@@ -4,6 +4,25 @@ from ..errors import LoxSyntaxError
 from .token import Token
 from .token_type import TokenType as TT  # noqa
 
+keywords = {
+    "and": TT.AND,
+    "class": TT.CLASS,
+    "else": TT.ELSE,
+    "false": TT.FALSE,
+    "for": TT.FOR,
+    "fun": TT.FUN,
+    "if": TT.IF,
+    "nil": TT.NIL,
+    "or": TT.OR,
+    "print": TT.PRINT,
+    "return": TT.RETURN,
+    "super": TT.SUPER,
+    "this": TT.THIS,
+    "true": TT.TRUE,
+    "var": TT.VAR,
+    "while": TT.WHILE,
+}
+
 
 class Scanner:
     """Scans the source one character at a time, identifying tokens"""
@@ -81,6 +100,8 @@ class Scanner:
             case _:
                 if char.isdigit():
                     self.number()
+                elif char.isalpha() or char == "_":
+                    self.identifier()
                 else:
                     raise LoxSyntaxError(
                         self.line, self.column, f"Unknown token {char}"
@@ -132,7 +153,7 @@ class Scanner:
         self.add_token(TT.STRING, string_content)
 
     def number(self) -> None:
-        """Get a number"""
+        """Lex a number"""
         while self.peek().isdigit():
             self.advance()
         # Look for the fractional part
@@ -147,3 +168,13 @@ class Scanner:
         if self.current + 1 >= len(self.source):
             return "\0"
         return self.source[self.current + 1]
+
+    def identifier(self) -> None:
+        """Find identifiers, determining if they are keywords or meant as names of objects."""
+        while self.peek().isidentifier():
+            self.advance()
+        text = self.source[self.start : self.current]
+        type_ = keywords.get(text, None)
+        if type_ is None:
+            type_ = TT.IDENTIFIER
+        self.add_token(type_)
